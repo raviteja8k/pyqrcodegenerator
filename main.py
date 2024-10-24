@@ -1,6 +1,9 @@
 # Import necessary libraries
 import qrcode  # Library to generate QR codes
-import sys     # Library for system-specific parameters and functions
+from flask import Flask, request, send_file, render_template  # Import Flask and necessary functions
+
+# Create a Flask application
+app = Flask(__name__)
 
 # Function to generate QR code from a given URL
 def generate_qr_code(url):
@@ -21,15 +24,20 @@ def generate_qr_code(url):
 
     # Save the image to a file
     img.save("qrcode.png")  # Save as 'qrcode.png'
+    return "qrcode.png"  # Return the filename for sending
+
+@app.route('/', methods=['GET'])  # Route for the home page
+def home():
+    return render_template('index.html')  # Render the HTML file instead of using a string
+
+@app.route('/generate', methods=['POST'])  # Create a route for QR code generation
+def generate():
+    url = request.form.get('url')  # Get URL from form data
+    if not url:
+        return "No URL provided. Exiting...", 400  # Return error if no URL is provided
+    filename = generate_qr_code(url)  # Call the function to generate QR code
+    return send_file(filename, mimetype='image/png')  # Send the generated QR code image
 
 # Main function to execute the script
 if __name__ == "__main__":
-    # Ask the user to provide a URL
-    url = input("Please enter a URL to generate a QR code: ")  # Prompt user for URL
-
-    # Check if a URL is provided
-    if not url:
-        print("No URL provided. Exiting...")  # Print message if no URL is entered
-        sys.exit(1)  # Exit the program with an error code
-
-    generate_qr_code(url)  # Call the function to generate QR code
+    app.run(debug=True)  # Run the Flask app in debug mode

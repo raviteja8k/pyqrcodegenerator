@@ -24,3 +24,4 @@ A simple Python script to generate QR codes from a given URL using the `qrcode` 
 ## Usage
 
 Run the script and provide a URL when prompted:
+    
